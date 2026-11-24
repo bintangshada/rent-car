@@ -1,4 +1,19 @@
+export type Role = "FLEET_COMMANDER" | "SAFETY_OFFICER" | "ARMADA_DRIVER";
+
 export type StatusLevel = "AMAN" | "WARNING" | "OVERLOAD";
+
+export type VehicleType = "PASSENGER" | "OPERATIONAL" | "LIGHT_TRUCK" | "MINIBUS";
+
+export type CommandAction = "FORCE_ON" | "FORCE_OFF";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  avatar: string;
+  createdAt: string;
+}
 
 export interface TelemetryData {
   weight: number;
@@ -7,33 +22,75 @@ export interface TelemetryData {
   lat: number;
   lng: number;
   speed: number;
+  recordedAt?: string;
 }
 
 export interface AuditLogItem extends TelemetryData {
   id: string;
+  vehicleId: string;
+  vehicleCode?: string;
   time: string;
 }
 
+export interface CommandLog {
+  id: string;
+  vehicleId: string;
+  vehicleCode?: string;
+  action: CommandAction;
+  topic: string;
+  payload: string;
+  status: string;
+  issuedBy: string;
+  createdAt: string;
+}
+
 export interface IoTDevice {
-  id: string; // e.g. "DEV-001"
-  name: string; // e.g. "Armada 01 - Avanza"
-  plateNumber: string; // e.g. "L 1945 UPN"
-  driverName: string; // e.g. "Budi Santoso"
-  vehicleType: "Mobil Penumpang" | "Mobil Operasional" | "Truk Ringan" | "Minibus";
-  topic: string; // e.g. "bintang/if-upn/safety-car/data" or "bintang/if-upn/safety-car/data/DEV-001"
-  warningLimit: number; // e.g. 30g
-  overloadLimit: number; // e.g. 50g
+  id: string;
+  code: string;
+  name: string;
+  plateNumber: string;
+  driverName: string;
+  vehicleType: VehicleType;
+  topic: string;
+  warningLimit: number;
+  overloadLimit: number;
+  isActive: boolean;
+  lastSeen: string | null;
+  createdAt: string;
+  updatedAt: string;
   telemetry: TelemetryData;
   logs: AuditLogItem[];
-  isOnline: boolean;
-  lastUpdated?: string;
 }
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "Fleet Commander" | "Safety Officer" | "Armada Driver";
-  avatar: string;
+export interface FleetSnapshot {
+  vehicles: IoTDevice[];
+  logs: AuditLogItem[];
+  commands: CommandLog[];
+  brokerStatus: "connected" | "connecting" | "offline";
+  brokerError?: string | null;
+  pendingCommands?: number;
+  demoActive: boolean;
+  brokerUrl: string;
+  brokerTcpUrl?: string;
+  brokerBridgeUrl?: string;
+  generatedAt: string;
 }
 
+export const ROLE_LABELS: Record<Role, string> = {
+  FLEET_COMMANDER: "Fleet Commander",
+  SAFETY_OFFICER: "Safety Officer",
+  ARMADA_DRIVER: "Armada Driver",
+};
+
+export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
+  PASSENGER: "Mobil Penumpang",
+  OPERATIONAL: "Mobil Operasional",
+  LIGHT_TRUCK: "Truk Ringan",
+  MINIBUS: "Minibus",
+};
+
+export const STATUS_LABELS: Record<StatusLevel, string> = {
+  AMAN: "Aman",
+  WARNING: "Peringatan",
+  OVERLOAD: "Overload",
+};

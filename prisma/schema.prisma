@@ -1,0 +1,102 @@
+generator client {
+  provider      = "prisma-client"
+  output        = "../generated/prisma"
+  runtime       = "nodejs"
+  moduleFormat  = "esm"
+  generatedFileExtension = "ts"
+  importFileExtension    = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  FLEET_COMMANDER
+  SAFETY_OFFICER
+  ARMADA_DRIVER
+}
+
+enum VehicleType {
+  PASSENGER
+  OPERATIONAL
+  LIGHT_TRUCK
+  MINIBUS
+}
+
+enum TelemetryStatus {
+  AMAN
+  WARNING
+  OVERLOAD
+}
+
+enum CommandAction {
+  FORCE_ON
+  FORCE_OFF
+}
+
+model User {
+  id           String       @id @default(uuid())
+  name         String
+  email        String       @unique
+  passwordHash String
+  role         Role         @default(ARMADA_DRIVER)
+  avatar       String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  commands     CommandLog[]
+
+  @@map("users")
+}
+
+model Vehicle {
+  id            String            @id @default(uuid())
+  code          String            @unique
+  name          String
+  plateNumber   String            @unique
+  driverName    String
+  vehicleType   VehicleType       @default(PASSENGER)
+  topic         String            @unique
+  warningLimit  Float             @default(3.0)
+  overloadLimit Float             @default(4.5)
+  isActive      Boolean           @default(true)
+  lastSeen      DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  readings      TelemetryReading[]
+  commands      CommandLog[]
+
+  @@map("vehicles")
+}
+
+model TelemetryReading {
+  id         String          @id @default(uuid())
+  vehicleId  String
+  vehicle    Vehicle         @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  weight     Float
+  status     TelemetryStatus
+  relay      Boolean
+  lat        Float
+  lng        Float
+  speed      Float
+  recordedAt DateTime        @default(now())
+
+  @@index([vehicleId, recordedAt])
+  @@map("telemetry_readings")
+}
+
+model CommandLog {
+  id         String        @id @default(uuid())
+  vehicleId  String
+  vehicle    Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  issuedById String?
+  issuedBy   User?         @relation(fields: [issuedById], references: [id], onDelete: SetNull)
+  action     CommandAction
+  topic      String
+  payload    String
+  status     String        @default("SENT")
+  createdAt  DateTime      @default(now())
+
+  @@index([vehicleId, createdAt])
+  @@map("command_logs")
+}

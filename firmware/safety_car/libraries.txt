@@ -1,0 +1,6 @@
+WiFi
+PubSubClient
+ArduinoJson
+HX711
+TinyGPSPlus
+LiquidCrystal_I2C
