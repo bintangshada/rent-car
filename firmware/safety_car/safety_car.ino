@@ -32,14 +32,14 @@
 // 2. KONFIGURASI WIFI DAN MQTT
 // ==========================================
 
-const char *WIFI_SSID = "33.550.336";
-const char *WIFI_PASSWORD = "seeyoutomorrow";
+const char *WIFI_SSID = "";
+const char *WIFI_PASSWORD = "";
 
 const char *MQTT_HOST = "";
 const int MQTT_PORT = 1883;
 
-const char *TOPIC_BASE = "bintang/if-upn/safety-car/data";
-const char *DEVICE_CODE = "DEV-001";
+const char *TOPIC_BASE = "";
+const char *DEVICE_CODE = "";
 
 // ==========================================
 // 3. KONFIGURASI SISTEM
