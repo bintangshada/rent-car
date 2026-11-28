@@ -35,7 +35,7 @@
 const char *WIFI_SSID = "33.550.336";
 const char *WIFI_PASSWORD = "seeyoutomorrow";
 
-const char *MQTT_HOST = "broker.hivemq.com";
+const char *MQTT_HOST = "";
 const int MQTT_PORT = 1883;
 
 const char *TOPIC_BASE = "bintang/if-upn/safety-car/data";
